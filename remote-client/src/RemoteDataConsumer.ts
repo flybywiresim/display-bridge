@@ -1,6 +1,6 @@
 import { SimVarValue } from "../../shared/types";
 
-export type SimVarValueMap = { [k: string]: SimVarValue }
+export type SimVarValueMap = Map<number, SimVarValue>
 
 export interface RemoteDataConsumer {
     consumeSimVarValues(values: SimVarValueMap): void

@@ -1,4 +1,5 @@
 import { RemoteDataConsumer, SimVarValueMap } from "./RemoteDataConsumer";
+import { SimVarValue } from "../../shared/types";
 
 export class DataCommandProcessor {
     constructor(
@@ -7,18 +8,18 @@ export class DataCommandProcessor {
     }
 
     public processSimVarValuesCommand(parts: readonly string[]): void {
-        const values: SimVarValueMap = {};
+        const values: SimVarValueMap = new Map<number, SimVarValue>();
 
         let currentId: number | null = null;
         for (let i = 0; i < parts.length; i++) {
             const isId = i % 2 === 0;
 
             const raw = parts[i];
-            const intRaw = parseInt(raw);
+            const valueRaw = JSON.parse(raw);
 
             if (isId) {
-                if (intRaw) {
-                    currentId = intRaw;
+                if (valueRaw) {
+                    currentId = valueRaw;
                 } else {
                     throw new Error('Processed simvar id with non-number value');
                 }
@@ -27,7 +28,7 @@ export class DataCommandProcessor {
                     throw new Error('Processed simvar value with null currentId ');
                 }
 
-                values[currentId] = intRaw;
+                values.set(currentId, valueRaw);
             }
         }
 

@@ -1,4 +1,3 @@
-import { MessageEvent, WebSocket } from 'ws';
 import {
     AircraftCommandName,
     AircraftCommands,
@@ -15,7 +14,7 @@ export class RemoteClient {
 
     public state = ClientState.Standby;
 
-    private messageQueue: RemoteClientCommands.All[];
+    private messageQueue: RemoteClientCommands.All[] = [];
 
     private dataCommandProcessor: DataCommandProcessor;
 
@@ -29,15 +28,15 @@ export class RemoteClient {
         this.ws = new WebSocket(url);
 
         this.ensureWsExists((ws) => {
-            ws.on('open', () => {
+            ws.addEventListener('open', () => {
                 this.state = ClientState.Connected;
 
-                ws.on('message', (message: MessageEvent) => this.processIncomingMessageRaw(message.data as string));
+                ws.addEventListener('message', (message: MessageEvent) => this.processIncomingMessageRaw(message.data as string));
 
                 this.sendMessageInternal([RemoteClientCommandName.LOGIN_AS_REMOTE_CLIENT]);
             });
 
-            ws.on('close', () => {
+            ws.addEventListener('close', () => {
                 this.state = ClientState.Standby;
                 this.ws = null;
             });
@@ -57,7 +56,7 @@ export class RemoteClient {
             default:
                 throw new Error(`Unknown command string: ${command}`);
             case SharedCommandName.ACKNOWLEDGE: {
-                if (!this.isLoggedIn()) {
+                if (this.isLoggedIn()) {
                     console.warn('Received ACKNOWLEDGE while logged in');
                 } else {
                     this.state = ClientState.LoggedIn;
