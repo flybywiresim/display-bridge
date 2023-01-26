@@ -1,0 +1,10 @@
+{
+    "name": "@flybywiresim/display-bridge-aircraft-server",
+    "version": "0.1.0",
+    "main": "dist/index.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/aircraft-client/src/index.d.ts",
+    "scripts": {
+        "build": "rollup -c"
+    }
+}

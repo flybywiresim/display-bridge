@@ -1,0 +1,10 @@
+{
+    "name": "@flybywiresim/display-bridge-remote-client",
+    "version": "0.1.0",
+    "dependencies": {
+        "ws": "^8.7.0"
+    },
+    "devDependencies": {
+        "@types/ws": "^8.5.3"
+    }
+}
