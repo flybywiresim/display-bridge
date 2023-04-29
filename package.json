@@ -1,6 +1,9 @@
 {
     "name": "@flybywiresim/display-bridge",
     "version": "0.1.0",
+    "scripts": {
+        "buildAll": "cd aircraft-client && npm run build && cd .. && cd remote-client && npm run build"
+    },
     "devDependencies": {
         "typescript": "^4.7.3",
         "@rollup/plugin-commonjs": "^17.1.0",

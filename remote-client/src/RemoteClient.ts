@@ -43,6 +43,10 @@ export class RemoteClient {
         })
     }
 
+    destroy() {
+        this.ws.close();
+    }
+
     private processIncomingMessageRaw(rawMessage: string): void {
         const parts = rawMessage.split(';');
 
@@ -67,6 +71,14 @@ export class RemoteClient {
             }
             case AircraftCommandName.SIMVAR_VALUES: {
                 this.dataCommandProcessor.processSimVarValuesCommand(rest);
+                break;
+            }
+            case AircraftCommandName.SIMVAR_SET_NOTIFY: {
+                this.dataCommandProcessor.processSimVarSetNotifyCommand(rest);
+                break;
+            }
+            case AircraftCommandName.COHERENT_TRIGGERED: {
+                this.dataCommandProcessor.processCoherentTriggeredCommand(rest);
                 break;
             }
         }

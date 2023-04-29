@@ -6,6 +6,7 @@ import {
     SharedCommandName
 } from "../../shared/protocol";
 import { ClientGateway } from "./ClientGateway";
+import { PROXY_SERVER_CLIENT_ID } from "../../shared/constants";
 
 export enum ConnectionType {
     Aircraft,
@@ -31,6 +32,8 @@ export class DisplayBridgeProxyServer {
     public removeClientConnection(clientID: string) {
         if (this.aircraftClientID === clientID) {
             this.aircraftClientID = null;
+        } else if (this.aircraftClientID) {
+            this.sendMessageToAircraftClient(this.aircraftClientID, clientID, [RemoteClientCommandName.LOGOUT_AS_REMOTE_CLIENT]);
         }
 
         this.connections.delete(clientID);
@@ -55,7 +58,7 @@ export class DisplayBridgeProxyServer {
 
                 this.aircraftClientID = clientID;
 
-                this.sendMessageToAircraftClient(clientID, [SharedCommandName.ACKNOWLEDGE]);
+                this.sendMessageToAircraftClient(clientID, PROXY_SERVER_CLIENT_ID, [SharedCommandName.ACKNOWLEDGE]);
 
                 break;
             }
@@ -108,7 +111,7 @@ export class DisplayBridgeProxyServer {
     private processCommandFromRemoteClient(clientID: string, command: RemoteClientCommands.All) {
         // TODO maybe queue for sending ?
         if (this.aircraftClientID) {
-            const serialised = command.join(';');
+            const serialised = `${clientID}|${command.join(';')}`;
 
             this.clientGateway.sendMessageRawTo(this.aircraftClientID, serialised);
         } else {
@@ -116,10 +119,10 @@ export class DisplayBridgeProxyServer {
         }
     }
 
-    private sendMessageToAircraftClient(clientID: string, command: RemoteClientCommands.All) {
-        const serialised = command.join(';');
+    private sendMessageToAircraftClient(aircraftClientID: string, remoteClientID: string, command: RemoteClientCommands.All) {
+        const serialised = `${remoteClientID}|${command.join(';')}`;
 
-        this.clientGateway.sendMessageRawTo(clientID, serialised);
+        this.clientGateway.sendMessageRawTo(aircraftClientID, serialised);
     }
 
     private sendMessageToRemoteClient(clientID: string, command: AircraftCommands.All) {

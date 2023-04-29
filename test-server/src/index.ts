@@ -35,6 +35,8 @@ server.on('connection', (socket) => {
     socket.on('close', () => {
         clientMap.delete(uuid);
 
+        console.log('DISCONNECT!')
+
         proxy.removeClientConnection(uuid);
     });
 

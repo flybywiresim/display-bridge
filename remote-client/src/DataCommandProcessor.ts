@@ -18,13 +18,13 @@ export class DataCommandProcessor {
             const valueRaw = JSON.parse(raw);
 
             if (isId) {
-                if (valueRaw) {
+                if (Number.isFinite(valueRaw)) {
                     currentId = valueRaw;
                 } else {
                     throw new Error('Processed simvar id with non-number value');
                 }
             } else {
-                if (!currentId) {
+                if (!Number.isFinite(currentId)) {
                     throw new Error('Processed simvar value with null currentId ');
                 }
 
@@ -35,4 +35,24 @@ export class DataCommandProcessor {
         this.dataConsumer.consumeSimVarValues(values);
     }
 
+    public processSimVarSetNotifyCommand(parts: readonly string[]): void {
+        const requestId = parts[0];
+        const intRequestId = parseInt(requestId);
+
+        const successful = parts[1];
+        const boolSuccessful = Boolean(successful);
+
+        this.dataConsumer.acceptSimVarSetNotification(intRequestId, boolSuccessful);
+    }
+
+    public processCoherentTriggeredCommand(parts: readonly string[]): void {
+        const event = parts[0];
+0
+        const data = [];
+        for (let i = 1; i < parts.length; i++) {
+            data.push(JSON.parse(parts[i]));
+        }
+
+        this.dataConsumer.acceptCoherentTriggered(event, data);
+    }
 }

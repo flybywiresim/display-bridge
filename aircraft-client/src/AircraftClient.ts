@@ -17,6 +17,8 @@ export class AircraftClient {
     private messageQueue: AircraftCommands.All[] = [];
     private dataCommandProcessor: DataCommandProcessor;
 
+    public simVarSubscriptions = new Map<string, Map<number, [string, string]>>();
+
     constructor(
         private readonly dataConsumer: AircraftDataConsumer,
     ) {
@@ -43,17 +45,19 @@ export class AircraftClient {
     }
 
     private processIncomingMessageRaw(rawMessage: string): void {
-        const parts = rawMessage.split(';');
+        const split = rawMessage.split('|');
+        const remoteClientID = split[0];
+        const parts = split[1].split(';');
 
-        this.processMessage(parts as RemoteClientCommands.All);
+        this.processMessage(remoteClientID, parts as RemoteClientCommands.All);
     }
 
-    private processMessage(parts: RemoteClientCommands.All): void {
+    private processMessage(remoteClientID: string, parts: RemoteClientCommands.All): void {
         const [command, ...rest] = parts as readonly string[];
 
         switch (command) {
             default:
-                throw new Error(`Unknown command string: ${command}`);
+                throw new Error(`Unknown command string: ${command} from client=${remoteClientID}`);
             case SharedCommandName.ACKNOWLEDGE: {
                 if (this.isLoggedIn()) {
                     console.warn('Received ACKNOWLEDGE while logged in');
@@ -64,13 +68,21 @@ export class AircraftClient {
                 }
                 break;
             }
+            case RemoteClientCommandName.LOGOUT_AS_REMOTE_CLIENT:
+                this.simVarSubscriptions.delete(remoteClientID);
+                break;
             case RemoteClientCommandName.SIMVAR_SUBSCRIBE:
-                this.dataCommandProcessor.processSubscribeToSimVarCommand(rest);
+                this.dataCommandProcessor.processSubscribeToSimVarCommand(remoteClientID, rest);
                 break;
-            case RemoteClientCommandName.SIMVAR_SET: {
-                this.dataCommandProcessor.processSetSimVarValueCommand(rest);
+            case RemoteClientCommandName.SIMVAR_SET:
+                this.dataCommandProcessor.processSetSimVarValueCommand(remoteClientID, rest);
                 break;
-            }
+            case RemoteClientCommandName.COHERENT_SUBSCRIBE:
+                this.dataCommandProcessor.processCoherentSubscribeCommand(remoteClientID, rest);
+                break;
+            case RemoteClientCommandName.COHERENT_UNSUBSCRIBE:
+                this.dataCommandProcessor.processCoherentSubscribeCommand(remoteClientID, rest);
+                break;
         }
     }
 

@@ -9,11 +9,15 @@ export enum SharedCommandName {
 export enum RemoteClientCommandName {
     LOGIN_AS_REMOTE_CLIENT = 'lac',
 
+    LOGOUT_AS_REMOTE_CLIENT = 'loc',
+
     SIMVAR_SUBSCRIBE = 'ssv',
 
     SIMVAR_SET = 'stv',
 
     COHERENT_SUBSCRIBE = 'ces',
+
+    COHERENT_UNSUBSCRIBE = 'ceu',
 
     FLOW_SUBSCRIBE = 'fls',
 }
@@ -42,15 +46,19 @@ type Acknowledge = [command: SharedCommandName.ACKNOWLEDGE];
 export namespace RemoteClientCommands {
     export type LoginAsAceClient = [command: RemoteClientCommandName.LOGIN_AS_REMOTE_CLIENT];
 
+    export type LogoutAsRemoteClient = [command: RemoteClientCommandName.LOGOUT_AS_REMOTE_CLIENT];
+
     export type SimVarSubscribe = [command: RemoteClientCommandName.SIMVAR_SUBSCRIBE, name: string, unit: string, id: number];
 
-    export type SimVarSet = [command: RemoteClientCommandName.SIMVAR_SET, requestId: number, name: string, unit: string, value: SimVarValue];
+    export type SimVarSet = [command: RemoteClientCommandName.SIMVAR_SET, requestID: number, name: string, unit: string, value: SimVarValue];
 
-    export type CoherentSubscribe = [command: RemoteClientCommandName.COHERENT_SUBSCRIBE, event: string];
+    export type CoherentSubscribe = [command: RemoteClientCommandName.COHERENT_SUBSCRIBE, requestID: number, event: string];
+
+    export type CoherentUnsubscribe = [command: RemoteClientCommandName.COHERENT_UNSUBSCRIBE, requestID: number];
 
     export type FlowSubscribe = [command: RemoteClientCommandName.FLOW_SUBSCRIBE, event: string];
 
-    export type All = Acknowledge | LoginAsAceClient | SimVarSubscribe | SimVarSet | CoherentSubscribe | FlowSubscribe;
+    export type All = Acknowledge | LoginAsAceClient | LogoutAsRemoteClient | SimVarSubscribe | SimVarSet | CoherentSubscribe | CoherentUnsubscribe | FlowSubscribe;
 }
 
 /**
