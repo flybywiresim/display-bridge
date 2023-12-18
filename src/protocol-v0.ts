@@ -31,20 +31,13 @@ export interface AircraftStatusMessage extends BaseMessage {
   };
 }
 
-export interface AircraftSendGaugeBundlesMessage extends BaseMessage {
-  type: 'aircraftSendGaugeBundles';
-  bundles: {
-    js: {
-      data: string;
-      chunkIndex: number;
-      chunkCount: number;
-    };
-    css: {
-      data: string;
-      chunkIndex: number;
-      chunkCount: number;
-    };
-  };
+export interface AircraftSendFileChunkMessage extends BaseMessage {
+  type: 'aircraftSendFileChunk';
+  requestID: string;
+  data: string;
+  chunkIndex: number;
+  chunkCount: number;
+  totalSizeBytes: number;
 }
 
 export interface AircraftSendInstrumentsMessage extends BaseMessage {
@@ -89,9 +82,10 @@ export interface RemoteRequestAircraftSigninMessage extends BaseMessage {
   type: 'remoteRequestAircraftSignin';
 }
 
-export interface RemoteRequestGaugeBundlesMessage extends BaseMessage {
-  type: 'remoteRequestGaugeBundles';
-  instrumentID: string;
+export interface RemoteDownloadFileMessage extends BaseMessage {
+  type: 'remoteDownloadFile';
+  fileVfsPath: string;
+  requestID: string;
 }
 
 export interface RemoteEnumerateInstrumentsMessage extends BaseMessage {
@@ -147,6 +141,11 @@ export interface RemoteViewListenerOnMessage extends BaseMessage {
   subscriptionGroupID: string;
 }
 
+export interface RemoteSubscriptionCancelMessage extends BaseMessage {
+  type: 'remoteSubscriptionCancel';
+  subscriptionID: string;
+}
+
 export interface RemoteSubscriptionGroupCancelMessage extends BaseMessage {
   type: 'remoteSubscriptionGroupCancel';
   subscriptionGroupID: string;
@@ -180,7 +179,7 @@ export interface ProtocolHeartbeat extends BaseMessage {
 export type Messages =
   | AircraftSigninMessage
   | AircraftStatusMessage
-  | AircraftSendGaugeBundlesMessage
+  | AircraftSendFileChunkMessage
   | AircraftSendInstrumentsMessage
   | AircraftSendSimVarValuesMessage
   | AircraftSendDataStorageMessage
@@ -189,7 +188,7 @@ export type Messages =
   | AircraftClientDisconnectMessage
   | RemoteSigninMessage
   | RemoteRequestAircraftSigninMessage
-  | RemoteRequestGaugeBundlesMessage
+  | RemoteDownloadFileMessage
   | RemoteEnumerateInstrumentsMessage
   | RemoteSubscribeToSimVarMessage
   | RemoteRequestDataStorageMessage
@@ -197,6 +196,7 @@ export type Messages =
   | RemoteSetSimVarValueMessage
   | RemoteRegisterViewListenerMessage
   | RemoteViewListenerOnMessage
+  | RemoteSubscriptionCancelMessage
   | RemoteSubscriptionGroupCancelMessage
   | RemoteClientDisconnectMessage
   | ProtocolGatewayIntroductionMessage
