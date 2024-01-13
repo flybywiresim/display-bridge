@@ -1,6 +1,6 @@
 {
   "name": "@flybywiresim/remote-bridge-types",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.1",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc src/index.ts --declaration --emitDeclarationOnly --outDir dist"
